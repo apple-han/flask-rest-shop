@@ -2,24 +2,44 @@
 __author__ = '__apple'
 __time__ = '2018/2/2 10:03'
 
-from flask import Flask,request
-from flask_restful import Resource,Api
 
 
-app = Flask(__name__)
-api = Api(app)
+# class BaseException(Exception):
+#     # HTTP的状态码
+#     code = 400
+#     # 错误的具体信息
+#     msg = '参数错误'
+#     # 自定义错误
+#     errorcode = 10000
+#     #
+#     def __init__(self):
+#         super().__init__()  # 初始化父类
+#
+#     def __str__(self):
+#         return self.code
+class BaseException(Exception):
 
-todos = {}
-class TodoSimple(Resource):
-    def get(self, todo_id):
-        return {todo_id: todos[todo_id]}
+    def __init__(self):
+        code = self.code
+        msg = self.msg
+        errorcode = self.errorcode
+        self.err = {}
+        self.err['code'] = code
+        self.err['msg'] = msg
+        self.err['errorcode'] = errorcode
+        Exception.__init__(self, self.err)
 
-    def put(self, todo_id):
-        todos[todo_id] = request.form['data']
 
-        return {todo_id: todos[todo_id]}
+class IllegalException(BaseException):
+     def __init__(self):
+         self.code = 500
+         self.msg = '参数错误'
+         self.errorcode = 10000
+         super().__init__()
 
-api.add_resource(TodoSimple, '/<string:todo_id>')
-
-if __name__ == '__main__':
-    app.run(debug=True)
+try:
+    integer = None
+    if integer != True:
+        raise(IllegalException)
+except IllegalException as x:
+    print(x)
